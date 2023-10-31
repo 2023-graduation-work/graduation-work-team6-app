@@ -7,7 +7,7 @@ import hashlib
 def register_page(root):
     def register():
         username = username_entry.get()
-        age = int(grade_combobox.get())  # 学年を整数に変換
+        age = int(grade_combobox.get()) 
         gender = gender_var.get()
         email = email_entry.get()
         password = password_entry.get()
