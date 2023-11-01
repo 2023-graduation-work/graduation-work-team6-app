@@ -23,7 +23,6 @@ def show_book_list():
         book_listbox = tk.Listbox(book_list_window)
         book_listbox.pack()
 
-        # リストボックスに本を追加
         for book in books:
             book_info = f"{book[0]},{book[1]},{book[2]},{book[3]},{book[4]}"
             book_listbox.insert(tk.END, book_info)
