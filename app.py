@@ -18,7 +18,7 @@ def show_add_book():
 def show_search_book():
     search_book.show_search_book()
 
-def show_lend_book():
+def show_lend_book(): 
     lend_book.show_lend_book()
 
 def show_delete_book():
