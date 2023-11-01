@@ -3,5 +3,5 @@ CREATE TABLE book (
   title VARCHAR(64),
   author VARCHAR(64),
   company VARCHAR(64),
-  ISBN VARCHAR(8)
+  ISBN VARCHAR(13)
 );
