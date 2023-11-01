@@ -1,10 +1,10 @@
 import tkinter as tk
-import book_list  # 本の一覧ページのコードをインポート
-import add_book  # 本の登録ページのコードをインポート
-import search_book  # 本の検索ページのコードをインポート
-import lend_book  # 本の貸出ページのコードをインポート
-import delete_book  # 本の削除ページのコードをインポート
-import check_availability  # 貸出状況確認ページのコードをインポート
+import book_list  
+import add_book  
+import search_book  
+import lend_book 
+import delete_book  
+import check_availability  
 
 root = tk.Tk()
 root.title("図書管理アプリ")
