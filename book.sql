@@ -5,3 +5,10 @@ CREATE TABLE book (
   company VARCHAR(64),
   ISBN VARCHAR(13)
 );
+
+CREATE TABLE list (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(64),
+  mail VARCHAR(64),
+  ISBN VARCHAR(13)
+);
