@@ -7,7 +7,7 @@ def show_check_availability():
     # 貸出状況を表示するウィジェットを作成
     # データベースから貸出状況を取得し、表示
     # ...
-
+    
     # ページを閉じるボタンを追加
     close_button = tk.Button(check_availability_window, text="閉じる", command=check_availability_window.destroy)
     close_button.pack()
