@@ -1,7 +1,9 @@
 import tkinter as tk
+from tkinter import messagebox
+from tkcalendar import DateEntry
 import psycopg2
 from datetime import datetime, timedelta
-from tkinter import messagebox
+import webbrowser
 
 # データベース接続情報
 db_config = {
@@ -18,8 +20,9 @@ def calculate_days_elapsed(lend_date):
 
 def send_email(mail, book_title):
     # ここに実際のメール送信処理を実装するコードを追加
-    # メール送信ライブラリや外部APIを使用する必要があります
-    messagebox.showinfo("メール送信", f"{mail} に {book_title} の返却リマインダーメールを送信しました。")
+    # 以下は仮の実装で、GmailのWebインターフェースを開くだけです
+    email_url = f"https://mail.google.com/mail/?view=cm&fs=1&to={mail}&su=返却リマインダー&body={book_title}の返却期限が過ぎています。"
+    webbrowser.open(email_url)
 
 def show_check_availability():
     check_availability_window = tk.Toplevel()
