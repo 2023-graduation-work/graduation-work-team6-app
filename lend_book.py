@@ -68,11 +68,9 @@ def show_book_info(book, email, lend_date, parent_window):
         label = tk.Label(book_info_window, text=f"{label_text}: {book[i]}")
         label.pack()
 
-    # カレンダーウィジェットを配置
     lend_date_label = tk.Label(book_info_window, text="貸出日の選択")
     lend_date_label.pack()
 
-    # tkcalendarのDateEntryを使用
     lend_date = DateEntry(book_info_window, date_pattern='yyyy-mm-dd')
     lend_date.pack()
 
@@ -85,7 +83,7 @@ def show_lend_book():
     isbn_label = tk.Label(lend_book_window, text="ISBNを入力してください")
     isbn_label.pack()
 
-    global isbn_entry  # isbn_entryをグローバル変数にする
+    global isbn_entry  
     isbn_entry = tk.Entry(lend_book_window)
     isbn_entry.pack()
 
