@@ -18,7 +18,15 @@ def calculate_days_borrowed(lend_date):
 
 def send_email(mail, book_title, user_name, lend_date):
     subject = "図書室からのお知らせ"
-    body = f"{user_name}様\n\n\n\n大変お世話になっております。\n\n盛ジョビ図書室 狢澤碧 です。\n\n\n{str(lend_date)}にお貸しした「{book_title}」の貸し出し期限が過ぎていますので、\n至急、返却をお願いします。"
+    body = f"{user_name}様\r\n\r\n"\
+           "大変お世話になっております。\r\n"\
+           "盛ジョビ図書室 狢澤碧 です。\r\n\r\n"\
+           f"{str(lend_date)}にお貸しした「{book_title}」の貸し出し期限が過ぎていますので\r\n"\
+           "至急、返却をお願いします。"
+    
+    # 新しく追加
+    body = body.replace('\r\n', '%0A').replace('\n', '%0A').replace('\r', '%0A')
+    
     email_url = f"https://mail.google.com/mail/?view=cm&fs=1&to={mail}&su={subject}&body={body}"
     webbrowser.open(email_url)
 
