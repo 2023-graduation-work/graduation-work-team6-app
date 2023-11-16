@@ -20,18 +20,14 @@ def center_window(window, width, height):
 root = tk.Tk()
 root.title("図書管理アプリ")
 
-# ウィンドウのサイズ
 window_width = root.winfo_screenwidth() - 100
 window_height = root.winfo_screenheight() - 100
 
-# ウィンドウのサイズを指定
 root.geometry(f"{window_width}x{window_height}")
 
-# 図書管理メニューラベルの作成
 menu_label = tk.Label(root, text="図書管理メニュー", font=('Helvetica', 24))
 menu_label.pack(pady=20)
 
-# スタイルの設定
 style = ttk.Style()
 style.configure("TButton", padding=15, font=('Helvetica', 16))
 
@@ -56,7 +52,6 @@ def show_check_availability():
 def show_return_book():
     return_book.show_return_book()
 
-# ボタンの作成
 list_books_button = ttk.Button(root, text="本の一覧", command=show_book_list, style="TButton")
 add_book_button = ttk.Button(root, text="本の登録", command=show_add_book, style="TButton")
 search_book_button = ttk.Button(root, text="本の検索", command=show_search_book, style="TButton")
@@ -65,7 +60,6 @@ delete_book_button = ttk.Button(root, text="本の削除", command=show_delete_b
 check_availability_button = ttk.Button(root, text="貸出状況確認", command=show_check_availability, style="TButton")
 return_book_button = ttk.Button(root, text="本の返却", command=show_return_book, style="TButton")
 
-# ボタンの配置
 list_books_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
 add_book_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
 search_book_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
@@ -74,13 +68,11 @@ delete_book_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
 check_availability_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
 return_book_button.pack(side=tk.LEFT, padx=5, pady=(20, 10), expand=True)
 
-# ウィンドウのリサイズイベントに対応するためのバインディング
 def on_resize(event):
     center_window(root, event.width, event.height)
 
 root.bind("<Configure>", on_resize)
 
-# ウィンドウを中央に配置
 center_window(root, window_width, window_height)
 
 root.mainloop()
