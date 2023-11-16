@@ -97,25 +97,22 @@ def show_check_availability():
             mail_entry.grid(row=row_number, column=7)
             
             if days_borrowed > 7:
-                id_entry.config(bg="red")
-                title_entry.config(bg="red")
-                author_entry.config(bg="red")
-                company_entry.config(bg="red")
-                isbn_entry.config(bg="red")
-                user_name_entry.config(bg="red")
-                days_borrowed_entry.config(bg="red")
-                mail_entry.config(bg="red")
+                color = "#FF9999"  # 薄い赤
+            else:
+                color = "lightgray"  # 7日以内の場合の色
+            
+            id_entry.config(bg=color)
+            title_entry.config(bg=color)
+            author_entry.config(bg=color)
+            company_entry.config(bg=color)
+            isbn_entry.config(bg=color)
+            user_name_entry.config(bg=color)
+            days_borrowed_entry.config(bg=color)
+            mail_entry.config(bg=color)
+            
+            if days_borrowed > 7:
                 reminder_button = tk.Button(frame, text="メール送信", command=lambda m=book[6], b=book[1], u=book[5], ld=lend_date: send_reminder(m, b, u, ld))
                 reminder_button.grid(row=row_number, column=8)
-            else:
-                id_entry.config(bg="lightgray")  # 7日以内の場合の色
-                title_entry.config(bg="lightgray")
-                author_entry.config(bg="lightgray")
-                company_entry.config(bg="lightgray")
-                isbn_entry.config(bg="lightgray")
-                user_name_entry.config(bg="lightgray")
-                days_borrowed_entry.config(bg="lightgray")
-                mail_entry.config(bg="lightgray")
             
             row_number += 1
 
