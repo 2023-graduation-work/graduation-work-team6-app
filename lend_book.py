@@ -30,7 +30,7 @@ def is_book_already_borrowed(isbn):
         if conn:
             conn.close()
 
-def lend_book(email, book_title, lend_date, lend_book_window):
+def lend_book(email, user_name, book_title, lend_date, lend_book_window):
     isbn = isbn_entry.get()
 
     # 指定したISBNで既に本が借りられているか確認
@@ -45,11 +45,11 @@ def lend_book(email, book_title, lend_date, lend_book_window):
             cursor = conn.cursor()
 
             # lend_listテーブルにデータを挿入
-            cursor.execute("INSERT INTO list (title, mail, ISBN, lend_date) VALUES (%s, %s, %s, %s)",
-                           (book_title, email, isbn, lend_date))
+            cursor.execute("INSERT INTO list (title, user_name, mail, ISBN, lend_date) VALUES (%s, %s, %s, %s, %s)",
+                           (book_title, user_name, email, isbn, lend_date))
 
             conn.commit()
-            messagebox.showinfo("結果", f"{book_title} を {email} に {lend_date} に貸し出しました。")
+            messagebox.showinfo("結果", f"{book_title} を {user_name} さん に {lend_date} に貸し出しました。")
         except psycopg2.Error as e:
             error_message = f"エラー: データベースへのデータ挿入に失敗しました - {e}"
             messagebox.showerror("エラー", error_message)
@@ -74,18 +74,27 @@ def show_book_info(book, email, lend_date, parent_window):
     lend_date = DateEntry(book_info_window, date_pattern='yyyy-mm-dd')
     lend_date.pack()
 
-    lend_button = tk.Button(book_info_window, text="借りる", command=lambda: lend_book(email, book[0], lend_date.get(), book_info_window))
+    lend_button = tk.Button(book_info_window, text="借りる", command=lambda: lend_book(email, user_name_entry.get(), book[0], lend_date.get(), book_info_window))
     lend_button.pack()
 
 def show_lend_book():
     lend_book_window = tk.Toplevel()
     lend_book_window.title("本の貸出")
+
     isbn_label = tk.Label(lend_book_window, text="ISBNを入力してください")
     isbn_label.pack()
 
     global isbn_entry  
     isbn_entry = tk.Entry(lend_book_window)
     isbn_entry.pack()
+
+    # 名前入力
+    user_name_label = tk.Label(lend_book_window, text="名前を入力してください")
+    user_name_label.pack()
+
+    global user_name_entry
+    user_name_entry = tk.Entry(lend_book_window)
+    user_name_entry.pack()
 
     # メールアドレスを入力するためのエントリウィジェットを配置
     email_label = tk.Label(lend_book_window, text="メールアドレスを入力してください")
