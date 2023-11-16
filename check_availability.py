@@ -1,10 +1,9 @@
 import tkinter as tk
-import psycopg2
 from tkinter import messagebox
 from datetime import datetime
 import webbrowser
+import psycopg2
 
-# データベースの設定
 db_config = {
     'dbname': 'mydb',
     'user': 'user1',
@@ -17,23 +16,24 @@ def calculate_days_borrowed(lend_date):
     days_borrowed = (today - lend_date).days
     return max(0, days_borrowed)
 
-def send_email(mail, book_title):
-    email_url = f"https://mail.google.com/mail/?view=cm&fs=1&to={mail}&su=返却リマインダー&body={book_title}の返却期限が過ぎています。"
+def send_email(mail, book_title, user_name, lend_date):
+    subject = "図書室からのお知らせ"
+    body = f"{user_name}様\n\n\n\n大変お世話になっております。\n\n盛ジョビ図書室 狢澤碧 です。\n\n\n{str(lend_date)}にお貸しした「{book_title}」の貸し出し期限が過ぎていますので、\n至急、返却をお願いします。"
+    email_url = f"https://mail.google.com/mail/?view=cm&fs=1&to={mail}&su={subject}&body={body}"
     webbrowser.open(email_url)
 
-def send_reminder(mail, book_title):
-    send_email(mail, book_title)
+def send_reminder(mail, book_title, user_name, lend_date):
+    send_email(mail, book_title, user_name, lend_date)
 
 def show_check_availability():
-    check_availability_window = tk.Toplevel()
+    check_availability_window = tk.Toplevel() 
     check_availability_window.title("貸出状況確認")
 
     try:
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
 
-        # 本とリストのテーブルを結合して、貸し出し中の本だけを取得するクエリ
-        cursor.execute("SELECT b.id, b.title, b.author, b.company, b.ISBN FROM book b JOIN list l ON b.ISBN = l.ISBN")
+        cursor.execute("SELECT b.id, b.title, b.author, b.company, b.ISBN, l.user_name, l.mail, l.lend_date FROM book b JOIN list l ON b.ISBN = l.ISBN")
         books = cursor.fetchall()
 
         frame = tk.Frame(check_availability_window)
@@ -49,12 +49,14 @@ def show_check_availability():
         company_label.grid(row=0, column=3)
         isbn_label = tk.Label(frame, text="ISBN")
         isbn_label.grid(row=0, column=4)
+        user_name_label = tk.Label(frame, text="借りている人")
+        user_name_label.grid(row=0, column=5)
         days_borrowed_label = tk.Label(frame, text="貸出日数")
-        days_borrowed_label.grid(row=0, column=5)
+        days_borrowed_label.grid(row=0, column=6)
         mail_label = tk.Label(frame, text="メールアドレス")
-        mail_label.grid(row=0, column=6)
+        mail_label.grid(row=0, column=7)
         reminder_label = tk.Label(frame, text="メール送信")
-        reminder_label.grid(row=0, column=7)
+        reminder_label.grid(row=0, column=8)
 
         row_number = 1
         for book in books:
@@ -73,38 +75,40 @@ def show_check_availability():
             isbn_entry = tk.Entry(frame)
             isbn_entry.insert(0, book[4])
             isbn_entry.grid(row=row_number, column=4)
-            cursor.execute("SELECT COUNT(*) FROM list WHERE ISBN = %s", (book[4],))
-            is_lent = cursor.fetchone()[0]
-            if is_lent > 0:
-                cursor.execute("SELECT lend_date, mail FROM list WHERE ISBN = %s", (book[4],))
-                lend_info = cursor.fetchone()
-                lend_date = lend_info[0]
-                mail = lend_info[1]
-                days_borrowed = calculate_days_borrowed(lend_date)
-                mail_entry = tk.Entry(frame)
-                mail_entry.insert(0, mail)
-                mail_entry.grid(row=row_number, column=6)
-                days_borrowed_entry = tk.Entry(frame)
-                days_borrowed_entry.insert(0, days_borrowed)
-                days_borrowed_entry.grid(row=row_number, column=5)
-                if days_borrowed > 7:
-                    id_entry.config(bg="red")
-                    title_entry.config(bg="red")
-                    author_entry.config(bg="red")
-                    company_entry.config(bg="red")
-                    isbn_entry.config(bg="red")
-                    days_borrowed_entry.config(bg="red")
-                    mail_entry.config(bg="red")
-                    reminder_button = tk.Button(frame, text="メール送信", command=lambda m=mail, b=book[1]: send_reminder(m, b))
-                    reminder_button.grid(row=row_number, column=7)
-                else:
-                    id_entry.config(bg="lightgray")  # 7日以内の場合の色
-                    title_entry.config(bg="lightgray")
-                    author_entry.config(bg="lightgray")
-                    company_entry.config(bg="lightgray")
-                    isbn_entry.config(bg="lightgray")
-                    days_borrowed_entry.config(bg="lightgray")
-                    mail_entry.config(bg="lightgray")
+            user_name_entry = tk.Entry(frame)
+            user_name_entry.insert(0, book[5])
+            user_name_entry.grid(row=row_number, column=5)
+            cursor.execute("SELECT lend_date FROM list WHERE ISBN = %s", (book[4],))
+            lend_date = cursor.fetchone()[0]
+            days_borrowed = calculate_days_borrowed(lend_date)
+            days_borrowed_entry = tk.Entry(frame)
+            days_borrowed_entry.insert(0, days_borrowed)
+            days_borrowed_entry.grid(row=row_number, column=6)
+            mail_entry = tk.Entry(frame)
+            mail_entry.insert(0, book[6])
+            mail_entry.grid(row=row_number, column=7)
+            
+            if days_borrowed > 7:
+                id_entry.config(bg="red")
+                title_entry.config(bg="red")
+                author_entry.config(bg="red")
+                company_entry.config(bg="red")
+                isbn_entry.config(bg="red")
+                user_name_entry.config(bg="red")
+                days_borrowed_entry.config(bg="red")
+                mail_entry.config(bg="red")
+                reminder_button = tk.Button(frame, text="メール送信", command=lambda m=book[6], b=book[1], u=book[5], ld=lend_date: send_reminder(m, b, u, ld))
+                reminder_button.grid(row=row_number, column=8)
+            else:
+                id_entry.config(bg="lightgray")  # 7日以内の場合の色
+                title_entry.config(bg="lightgray")
+                author_entry.config(bg="lightgray")
+                company_entry.config(bg="lightgray")
+                isbn_entry.config(bg="lightgray")
+                user_name_entry.config(bg="lightgray")
+                days_borrowed_entry.config(bg="lightgray")
+                mail_entry.config(bg="lightgray")
+            
             row_number += 1
 
         cursor.close()
