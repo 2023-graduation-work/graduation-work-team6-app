@@ -26,7 +26,7 @@ def send_reminder(mail, book_title, user_name, lend_date):
     send_email(mail, book_title, user_name, lend_date)
 
 def show_check_availability():
-    check_availability_window = tk.Toplevel()
+    check_availability_window = tk.Toplevel() 
     check_availability_window.title("貸出状況確認")
 
     try:
