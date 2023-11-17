@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
+import tkinter.ttk as ttk
 from tkcalendar import DateEntry
 import psycopg2
+from datetime import date
 
-# データベース接続情報
 db_config = {
     'dbname': 'mydb',
     'user': 'user1',
@@ -33,7 +34,6 @@ def is_book_already_borrowed(isbn):
 def lend_book(email, user_name, book_title, lend_date, lend_book_window):
     isbn = isbn_entry.get()
 
-    # 指定したISBNで既に本が借りられているか確認
     is_borrowed, borrower_info = is_book_already_borrowed(isbn)
 
     if is_borrowed:
@@ -44,7 +44,6 @@ def lend_book(email, user_name, book_title, lend_date, lend_book_window):
             conn = psycopg2.connect(**db_config)
             cursor = conn.cursor()
 
-            # lend_listテーブルにデータを挿入
             cursor.execute("INSERT INTO list (title, user_name, mail, ISBN, lend_date) VALUES (%s, %s, %s, %s, %s)",
                            (book_title, user_name, email, isbn, lend_date))
 
@@ -56,25 +55,25 @@ def lend_book(email, user_name, book_title, lend_date, lend_book_window):
         finally:
             if conn:
                 conn.close()
-            # 借りるボタンがクリックされたらウィンドウを閉じる
             lend_book_window.destroy()
 
-def show_book_info(book, email, lend_date, parent_window):
+def show_book_info(book, email, parent_window):
     book_info_window = tk.Toplevel(parent_window)
     book_info_window.title("本の情報")
 
-    labels = ["本のタイトル", "ISBN"]
-    for i, label_text in enumerate(labels):
-        label = tk.Label(book_info_window, text=f"{label_text}: {book[i]}")
-        label.pack()
+    table = ttk.Treeview(book_info_window, columns=("Property", "Value"), show="headings")
+    table.heading("Property", text="")
+    table.heading("Value", text="")
 
-    lend_date_label = tk.Label(book_info_window, text="貸出日の選択")
-    lend_date_label.pack()
+    properties = ["本のタイトル", "ISBN", "今日の日付"]
+    values = [book[0], book[1], date.today()]
 
-    lend_date = DateEntry(book_info_window, date_pattern='yyyy-mm-dd')
-    lend_date.pack()
+    for prop, val in zip(properties, values):
+        table.insert("", "end", values=(prop, val))
 
-    lend_button = tk.Button(book_info_window, text="借りる", command=lambda: lend_book(email, user_name_entry.get(), book[0], lend_date.get(), book_info_window))
+    table.pack()
+
+    lend_button = tk.Button(book_info_window, text="借りる", command=lambda: lend_book(email, user_name_entry.get(), book[0], date.today(), book_info_window))
     lend_button.pack()
 
 def show_lend_book():
@@ -88,7 +87,6 @@ def show_lend_book():
     isbn_entry = tk.Entry(lend_book_window)
     isbn_entry.pack()
 
-    # 名前入力
     user_name_label = tk.Label(lend_book_window, text="名前を入力してください")
     user_name_label.pack()
 
@@ -96,7 +94,6 @@ def show_lend_book():
     user_name_entry = tk.Entry(lend_book_window)
     user_name_entry.pack()
 
-    # メールアドレスを入力するためのエントリウィジェットを配置
     email_label = tk.Label(lend_book_window, text="メールアドレスを入力してください")
     email_label.pack()
 
@@ -115,7 +112,7 @@ def show_lend_book():
                 book = cursor.fetchone()
 
                 if book:
-                    show_book_info(book, email, None, lend_book_window)
+                    show_book_info(book, email, lend_book_window)
                 else:
                     messagebox.showinfo("結果", "該当する本が見つかりませんでした.")
                 cursor.close()
