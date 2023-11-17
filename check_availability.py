@@ -59,12 +59,14 @@ def show_check_availability():
         isbn_label.grid(row=0, column=4)
         user_name_label = tk.Label(frame, text="借りている人")
         user_name_label.grid(row=0, column=5)
+        lend_date_label = tk.Label(frame, text="貸出日")
+        lend_date_label.grid(row=0, column=6)
         days_borrowed_label = tk.Label(frame, text="貸出日数")
-        days_borrowed_label.grid(row=0, column=6)
+        days_borrowed_label.grid(row=0, column=7)
         mail_label = tk.Label(frame, text="メールアドレス")
-        mail_label.grid(row=0, column=7)
+        mail_label.grid(row=0, column=8)
         reminder_label = tk.Label(frame, text="メール送信")
-        reminder_label.grid(row=0, column=8)
+        reminder_label.grid(row=0, column=9)
 
         row_number = 1
         for book in books:
@@ -86,15 +88,16 @@ def show_check_availability():
             user_name_entry = tk.Entry(frame)
             user_name_entry.insert(0, book[5])
             user_name_entry.grid(row=row_number, column=5)
-            cursor.execute("SELECT lend_date FROM list WHERE ISBN = %s", (book[4],))
-            lend_date = cursor.fetchone()[0]
-            days_borrowed = calculate_days_borrowed(lend_date)
+            lend_date_entry = tk.Entry(frame)
+            lend_date_entry.insert(0, book[7])  # 貸出日
+            lend_date_entry.grid(row=row_number, column=6)
+            days_borrowed = calculate_days_borrowed(book[7])  # 貸出日から算出
             days_borrowed_entry = tk.Entry(frame)
             days_borrowed_entry.insert(0, days_borrowed)
-            days_borrowed_entry.grid(row=row_number, column=6)
+            days_borrowed_entry.grid(row=row_number, column=7)
             mail_entry = tk.Entry(frame)
             mail_entry.insert(0, book[6])
-            mail_entry.grid(row=row_number, column=7)
+            mail_entry.grid(row=row_number, column=8)
             
             if days_borrowed > 7:
                 color = "#FF9999"  # 薄い赤
@@ -107,12 +110,13 @@ def show_check_availability():
             company_entry.config(bg=color)
             isbn_entry.config(bg=color)
             user_name_entry.config(bg=color)
+            lend_date_entry.config(bg=color)
             days_borrowed_entry.config(bg=color)
             mail_entry.config(bg=color)
             
             if days_borrowed > 7:
-                reminder_button = tk.Button(frame, text="メール送信", command=lambda m=book[6], b=book[1], u=book[5], ld=lend_date: send_reminder(m, b, u, ld))
-                reminder_button.grid(row=row_number, column=8)
+                reminder_button = tk.Button(frame, text="メール送信", command=lambda m=book[6], b=book[1], u=book[5], ld=book[7]: send_reminder(m, b, u, ld))
+                reminder_button.grid(row=row_number, column=9)
             
             row_number += 1
 
